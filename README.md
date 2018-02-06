@@ -1,6 +1,8 @@
 # demo1
 
-FIXME: description
+Work based on:  https://github.com/raju-bitter/clojure-javafx-example/blob/master/src/jfx/app.clj
+
+I added some additional code to print out command line -D jvm args, and application params.  I cleaned up code to use doto function to make code cleaner and shorter.
 
 ## Installation
 
