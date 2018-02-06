@@ -8,6 +8,5 @@
   :aot :all
   ;:main ^:skip-aot demo1.core
   :target-path "target/%s"
-  ;:profiles {:uberjar {:aot :all}}
-
+  :profiles {:uberjar {:aot :all}}
   )

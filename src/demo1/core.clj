@@ -7,14 +7,22 @@
            (javafx.scene.control Button)
            (javafx.scene.layout StackPane)
            (javafx.stage Stage)
-           (javafx.scene.web WebView)))
+           (javafx.scene.web WebView)
+           (javafx.application Platform)))
 
 (defn -start [app ^Stage stage]
-  (let [root (StackPane.)
-        btn (Button.)
-        web-view (WebView.)
+  (let [root       (StackPane.)
+        btn        (Button.)
+        web-view   (WebView.)
         state-prop (.stateProperty (.getLoadWorker (.getEngine web-view)))
-        url "http://clojure.org"]
+        url        "http://clojure.org"]
+
+    ;; Get app param args
+    ;; https://docs.oracle.com/javase/8/javafx/api/javafx/application/Application.Parameters.html#getNamed--
+    ;;
+    (println "raw params: " (.getRaw (.getParameters app)))
+    (println "named JNLP params: " (.getNamed (.getParameters app)))
+    (println "un-named params: " (.getUnnamed (.getParameters app)))
 
     ;; Add a WebView (headless browser)
     (.add (.getChildren root) web-view)
@@ -31,17 +39,20 @@
     (.load (.getEngine web-view) url)
 
     ;; add a Button with a click handler class floating on top of the WebView
-    (.setTitle stage "JavaFX app with Clojure")
-    (.setText btn "Just a button")
-    (.setOnAction btn
-                  (proxy [EventHandler] []
-                    (handle [^ActionEvent event]
-                      (println "The button was clicked"))))
+
+    (doto btn
+      (.setText "Just a button")
+      (.setOnAction
+        (proxy [EventHandler] []
+          (handle [^ActionEvent event]
+            (println "The button was clicked")))))
     (.add (.getChildren root) btn)
 
     ;; Set scene and show stage
-    (.setScene stage (Scene. root 800 600))
-    (.show stage)))
+    (doto stage
+      (.setTitle "JavaFX app with Clojure")
+      (.setScene (Scene. root 800 600))
+      (.show))))
 
 (defn -stop
   "Stop method is called when the application exits."
@@ -52,8 +63,14 @@
 (defn launch
   "Launch a JavaFX Application using class clj.jfx.App"
   [args]
-  (javafx.application.Application/launch demo1.core (into-array String [])))
+  ;; Print command line arg values that were given as cmd-line named args with -D flag
+  ;; -Dfoo=5 -Dbar="Sam"
+  (println (System/getProperty "foo"))
+  (println (System/getProperty "bar"))
+
+  (javafx.application.Application/launch demo1.core (into-array String args)))
 
 (defn -main [& args]
+  (println "ARGS passed in: " args)
   (launch args))
 
